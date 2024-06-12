@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import time
 from timeit import default_timer
-from spark_session import spark
+from modules.spark_session import spark
 
 os.makedirs('raw', exist_ok=True)
 os.makedirs('staging', exist_ok=True)
