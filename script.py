@@ -1,14 +1,16 @@
+import os
 import subprocess
 
 def run_script(script_name):
-    print(f"Ejecutando {script_name}...")
-    result = subprocess.run(["python", script_name], capture_output=True, text=True)
+    script_path = os.path.join("modules", script_name)
+    print(f"Ejecutando {script_path}...")
+    result = subprocess.run(["python", script_path], capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"Error ejecutando {script_name}:")
+        print(f"Error ejecutando {script_path}:")
         print(result.stderr)
         exit(1)
     else:
-        print(f"Salida de {script_name}:")
+        print(f"Salida de {script_path}:")
         print(result.stdout)
 
 

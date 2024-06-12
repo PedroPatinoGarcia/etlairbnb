@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import time
 from timeit import default_timer
-from modules.spark_session import spark
+from spark_session import spark
 
 os.makedirs('raw', exist_ok=True)
 os.makedirs('staging', exist_ok=True)
@@ -11,7 +11,6 @@ os.makedirs('business', exist_ok=True)
 class HandlerBranchCode:
     @staticmethod
     def read_csv(file_path):
-        """Lee un archivo CSV y devuelve un DataFrame de Spark."""
         try:
             df = spark.read.csv(file_path, header=True, inferSchema=True, escape='"', quote='"')
             return df
@@ -21,7 +20,6 @@ class HandlerBranchCode:
 
     @staticmethod
     def partition_folder(base_path):
-        """Crea una carpeta particionada por fecha y devuelve la ruta."""
         current_date = datetime.now()
         year = current_date.year
         month = current_date.month
@@ -33,7 +31,6 @@ class HandlerBranchCode:
 
     @staticmethod
     def write_data(df, output_path):
-        """Escribe un DataFrame en formato Parquet en la ruta especificada."""
         if df:
             start = default_timer()
             df_single_partition = df.coalesce(1)

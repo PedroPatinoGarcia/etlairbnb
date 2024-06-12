@@ -1,4 +1,3 @@
-from raw import HandlerBranchCode
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, exp, length, format_string, split, regexp_replace, concat_ws
 from pyspark.sql.types import StringType, ArrayType
@@ -6,12 +5,11 @@ import os
 import shutil
 from datetime import datetime
 
-spark = SparkSession.builder.appName("StagingAirBnB").config("spark.local.dir", "/path/to/your/temp/dir").getOrCreate()
+spark = SparkSession.builder.appName("StagingAirBnB").getOrCreate()
 
 class HandlerStaging:
     @staticmethod
     def get_latest_parquet_file(directory):
-        """Busca el archivo Parquet más reciente en el directorio especificado."""
         try:
             files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.parquet')]
             if not files:
@@ -24,7 +22,6 @@ class HandlerStaging:
     
     @staticmethod
     def partition_folder(base_path):
-        """Crea una estructura de carpetas basada en la fecha actual."""
         current_date = datetime.now()
         year = current_date.year
         month = current_date.month
@@ -36,7 +33,6 @@ class HandlerStaging:
 
     @staticmethod
     def clean_data(df):
-        """Realiza operaciones de limpieza en el DataFrame."""
         df = df.dropna(subset=['zipcode'])
         df = df.filter((length(col('zipcode')) == 5) | col('zipcode').endswith('.0'))
         df = df.withColumn('zipcode', format_string('%05d', col('zipcode').cast('double').cast('int')))
