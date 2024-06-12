@@ -27,6 +27,7 @@ jobs:
         name: Build and push
         run: |
           # Obtener la etiqueta en minúsculas
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           TAG=$(echo "${{ github.event_name }}-${{ github.sha }}" | tr '[:upper:]' '[:lower:]')
 
           # Construir y subir la imagen con la etiqueta en minúsculas
