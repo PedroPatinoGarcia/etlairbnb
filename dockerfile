@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-COPY modules/ /modules/
+COPY src/ /src/
 COPY script.py /
 WORKDIR /app
 
