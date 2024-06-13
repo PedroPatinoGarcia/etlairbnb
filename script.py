@@ -2,7 +2,7 @@ import os
 import subprocess
 
 def run_script(script_name):
-    script_path = os.path.join("modules", script_name)
+    script_path = os.path.join("src", script_name)
     print(f"Ejecutando {script_path}...")
     result = subprocess.run(["python", script_path], capture_output=True, text=True)
     if result.returncode != 0:
@@ -15,7 +15,7 @@ def run_script(script_name):
 
 
 if __name__ == "__main__":
-    scripts = ["spark_session.py", "raw.py", "staging.py", "business.py", "lambda_function.py", "lambda_save_function.py", "moto_s3.py"]
+    scripts = ["spark_session.py", "raw.py", "staging.py", "business.py", "lambda_function.py"]
     
     for script in scripts:
         run_script(script)
