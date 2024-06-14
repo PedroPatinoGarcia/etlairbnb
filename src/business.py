@@ -1,4 +1,4 @@
-from staging import HandlerStaging
+from staging import HandlerBranchStaging
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_date, lit
 import os
@@ -7,7 +7,7 @@ from datetime import datetime
 
 spark = SparkSession.builder.appName("BusinessAirBnB").getOrCreate()
 
-class HandlerBusiness:
+class HandlerBranchBusiness:
     @staticmethod
     def get_latest_parquet_file(directory):
         try:
@@ -51,16 +51,16 @@ class HandlerBusiness:
 
     @staticmethod
     def process_latest_staging():
-        staging_path = HandlerStaging.partition_folder('staging')
-        latest_file = HandlerBusiness.get_latest_parquet_file(staging_path)
+        staging_path = HandlerBranchStaging.partition_folder('staging')
+        latest_file = HandlerBranchBusiness.get_latest_parquet_file(staging_path)
 
         if latest_file:
             print(f"Processing file: {latest_file}")
             df = spark.read.parquet(latest_file)
-            business_df = HandlerBusiness.process_data(df)
+            business_df = HandlerBranchBusiness.process_data(df)
             
             if business_df.count() > 0:
-                business_path = HandlerBusiness.partition_folder('business')
+                business_path = HandlerBranchBusiness.partition_folder('business')
                 output_path = os.path.join(business_path, f"data-{datetime.now().strftime('%Y-%m-%d')}.parquet")
 
                 temp_output_path = os.path.join(business_path, "temp_output")
@@ -73,11 +73,11 @@ class HandlerBusiness:
 
                 print(f"Data processed and saved to {output_path}")
 
-                HandlerBusiness.export_to_csv(business_df, business_path)
+                HandlerBranchBusiness.export_to_csv(business_df, business_path)
             else:
                 print("DataFrame is empty after business processing. No file was saved.")
         else:
             print("No staging data file found to process.")
 
 if __name__ == "__main__":
-    HandlerBusiness.process_latest_staging()
+    HandlerBranchBusiness.process_latest_staging()

@@ -37,12 +37,81 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="spark_session.html">Spark Session Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="raw.html">Raw Data Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="staging.html">Staging Data Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="business.html">Business Data Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lambda_function.html">Lambda Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="test.html">Test Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="script.html">Script Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="raw.html">Raw Data Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="raw.html#clase-handlerbranchcode">Clase <cite>HandlerBranchCode</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="raw.html#raw.HandlerBranchCode"><code class="docutils literal notranslate"><span class="pre">HandlerBranchCode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="raw.html#raw.HandlerBranchCode.partition_folder"><code class="docutils literal notranslate"><span class="pre">HandlerBranchCode.partition_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="raw.html#raw.HandlerBranchCode.read_csv"><code class="docutils literal notranslate"><span class="pre">HandlerBranchCode.read_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="raw.html#raw.HandlerBranchCode.write_data"><code class="docutils literal notranslate"><span class="pre">HandlerBranchCode.write_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="raw.html#funcion-principal-main">Función Principal <cite>main()</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="raw.html#raw.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="raw.html#detalles-adicionales">Detalles Adicionales</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="staging.html">Staging Data Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="staging.html#clase-handlerbranchstaging">Clase <cite>HandlerBranchStaging</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="staging.html#staging.HandlerBranchStaging"><code class="docutils literal notranslate"><span class="pre">HandlerBranchStaging</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="staging.html#staging.HandlerBranchStaging.clean_data"><code class="docutils literal notranslate"><span class="pre">HandlerBranchStaging.clean_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="staging.html#staging.HandlerBranchStaging.get_latest_parquet_file"><code class="docutils literal notranslate"><span class="pre">HandlerBranchStaging.get_latest_parquet_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="staging.html#staging.HandlerBranchStaging.partition_folder"><code class="docutils literal notranslate"><span class="pre">HandlerBranchStaging.partition_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="staging.html#staging.HandlerBranchStaging.process_latest_raw"><code class="docutils literal notranslate"><span class="pre">HandlerBranchStaging.process_latest_raw()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="staging.html#funcion-principal-process-latest-raw">Función Principal <cite>process_latest_raw()</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="staging.html#detalles-adicionales">Detalles Adicionales</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="business.html">Business Data Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="business.html#clase-handlerbranchbusiness">Clase <cite>HandlerBranchBusiness</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="business.html#business.HandlerBranchBusiness"><code class="docutils literal notranslate"><span class="pre">HandlerBranchBusiness</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="business.html#business.HandlerBranchBusiness.export_to_csv"><code class="docutils literal notranslate"><span class="pre">HandlerBranchBusiness.export_to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="business.html#business.HandlerBranchBusiness.get_latest_parquet_file"><code class="docutils literal notranslate"><span class="pre">HandlerBranchBusiness.get_latest_parquet_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="business.html#business.HandlerBranchBusiness.partition_folder"><code class="docutils literal notranslate"><span class="pre">HandlerBranchBusiness.partition_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="business.html#business.HandlerBranchBusiness.process_data"><code class="docutils literal notranslate"><span class="pre">HandlerBranchBusiness.process_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="business.html#business.HandlerBranchBusiness.process_latest_staging"><code class="docutils literal notranslate"><span class="pre">HandlerBranchBusiness.process_latest_staging()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="business.html#funcion-principal-process-latest-staging">Función Principal <cite>process_latest_staging()</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="business.html#detalles-adicionales">Detalles Adicionales</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lambda_function.html">Lambda Function Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lambda_function.html#clase-handlerbranchlambda">Clase <cite>HandlerBranchLambda</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lambda_function.html#lambda_function.HandlerBranchLambda"><code class="docutils literal notranslate"><span class="pre">HandlerBranchLambda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lambda_function.html#funcion-principal-handlerbranchlambda">Función Principal <cite>HandlerBranchLambda()</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda_function.html#detalles-adicionales">Detalles Adicionales</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Test Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="test.html#clase-run-tests">Clase <cite>run_tests</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="test.html#test.run_tests"><code class="docutils literal notranslate"><span class="pre">run_tests</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#funcion-principal-run-tests">Función Principal <cite>run_tests()</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html#detalles-adicionales">Detalles Adicionales</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="script.html">Script Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="script.html#clase-run-script">Clase <cite>run_script</cite></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script.html#script.run_script"><code class="docutils literal notranslate"><span class="pre">run_script</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script.html#funcion-principal-run-script">Función Principal <cite>run_script()</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="script.html#detalles-adicionales">Detalles Adicionales</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -71,7 +140,7 @@
 <li class="toctree-l2"><a class="reference internal" href="raw.html">Raw Data Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="staging.html">Staging Data Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="business.html">Business Data Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lambda_function.html">Lambda Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda_function.html">Lambda Function Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Test Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="script.html">Script Documentation</a></li>
 </ul>

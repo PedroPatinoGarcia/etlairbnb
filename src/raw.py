@@ -11,6 +11,12 @@ os.makedirs('business', exist_ok=True)
 class HandlerBranchCode:
     @staticmethod
     def read_csv(file_path):
+        """
+        Lee un archivo CSV utilizando Spark DataFrame.
+
+        :param file_path: Ruta al archivo CSV.
+        :return: DataFrame de Spark si la lectura es exitosa, None en caso de error.
+        """
         try:
             df = spark.read.csv(file_path, header=True, inferSchema=True, escape='"', quote='"')
             return df
@@ -20,6 +26,12 @@ class HandlerBranchCode:
 
     @staticmethod
     def partition_folder(base_path):
+        """
+        Crea una estructura de carpetas basada en la fecha actual dentro del directorio especificado.
+
+        :param base_path: Ruta base donde se creará la estructura de carpetas.
+        :return: Ruta completa de la carpeta creada.
+        """
         current_date = datetime.now()
         year = current_date.year
         month = current_date.month
@@ -31,6 +43,12 @@ class HandlerBranchCode:
 
     @staticmethod
     def write_data(df, output_path):
+        """
+        Escribe el DataFrame dado en formato Parquet en la ruta especificada.
+
+        :param df: DataFrame de Spark a escribir.
+        :param output_path: Ruta donde se almacenará el archivo Parquet.
+        """
         if df:
             start = default_timer()
             df_single_partition = df.coalesce(1)

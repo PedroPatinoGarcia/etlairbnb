@@ -3,7 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 
-def HandlerLambda():
+def HandlerBranchLambda():
     s3_client = boto3.client('s3')
     bucket_name = 'nmpbucketairbnb'
     file_name = 'data-2024-06-14.csv'
@@ -37,4 +37,4 @@ def HandlerLambda():
     }
 
 if __name__ == '__main__':
-    print(HandlerLambda())
+    print(HandlerBranchLambda())

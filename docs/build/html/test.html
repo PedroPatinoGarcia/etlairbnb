@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Script Documentation" href="script.html" />
-    <link rel="prev" title="Staging Data Documentation" href="staging.html" />
+    <link rel="prev" title="Lambda Function Documentation" href="lambda_function.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,9 +32,43 @@
 
           <div class="body" role="main">
             
-  <section id="test-documentation">
-<h1>Test Documentation<a class="headerlink" href="#test-documentation" title="Link to this heading">¶</a></h1>
-<p>Aquí va la descripción y documentación del módulo de staging.</p>
+  <section id="module-test">
+<span id="test-documentation"></span><h1>Test Documentation<a class="headerlink" href="#module-test" title="Link to this heading">¶</a></h1>
+<section id="clase-run-tests">
+<h2>Clase <cite>run_tests</cite><a class="headerlink" href="#clase-run-tests" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="test.run_tests">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">test.</span></span><span class="sig-name descname"><span class="pre">run_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#test.run_tests" title="Link to this definition">¶</a></dt>
+<dd><p>Bases:</p>
+</dd></dl>
+
+</section>
+<section id="funcion-principal-run-tests">
+<h2>Función Principal <cite>run_tests()</cite><a class="headerlink" href="#funcion-principal-run-tests" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">test.</span></span><span class="sig-name descname"><span class="pre">run_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_name</span></span></em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</section>
+<section id="detalles-adicionales">
+<h2>Detalles Adicionales<a class="headerlink" href="#detalles-adicionales" title="Link to this heading">¶</a></h2>
+<p>### Estructura de Archivos</p>
+<p>El proyecto tiene la siguiente estructura de directorios:</p>
+<ul class="simple">
+<li><p><cite>test/</cite>: Directorio donde se almacenan los datos modificados en formato Parquet.</p></li>
+</ul>
+<p>### Dependencias</p>
+<ul class="simple">
+<li><p>PySpark: Se requiere para la manipulación y procesamiento de grandes volúmenes de datos.</p></li>
+</ul>
+<p>### Configuración</p>
+<p>El archivo <cite>spark_session.py</cite> configura la sesión de Spark para el proyecto.</p>
+<p>### Consideraciones de Uso</p>
+<ul class="simple">
+<li><p>Asegúrese de tener los permisos adecuados para crear carpetas y escribir archivos en el sistema de archivos.</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -57,11 +91,11 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="business.html">Business Data Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lambda_function.html">Lambda Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="raw.html">Raw Data Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="spark_session.html">Spark Session Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raw.html">Raw Data Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="staging.html">Staging Data Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="business.html">Business Data Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda_function.html">Lambda Function Documentation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Test Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="script.html">Script Documentation</a></li>
 </ul>
@@ -73,7 +107,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">src</a><ul>
-      <li>Previous: <a href="staging.html" title="previous chapter">Staging Data Documentation</a></li>
+      <li>Previous: <a href="lambda_function.html" title="previous chapter">Lambda Function Documentation</a></li>
       <li>Next: <a href="script.html" title="next chapter">Script Documentation</a></li>
   </ul></li>
   </ul></li>

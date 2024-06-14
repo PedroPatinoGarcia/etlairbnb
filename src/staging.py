@@ -7,7 +7,7 @@ from datetime import datetime
 
 spark = SparkSession.builder.appName("StagingAirBnB").getOrCreate()
 
-class HandlerStaging:
+class HandlerBranchStaging:
     @staticmethod
     def get_latest_parquet_file(directory):
         try:
@@ -52,16 +52,16 @@ class HandlerStaging:
 
     @staticmethod
     def process_latest_raw():
-        raw_path = HandlerStaging.partition_folder('raw')
-        latest_file = HandlerStaging.get_latest_parquet_file(raw_path)
+        raw_path = HandlerBranchStaging.partition_folder('raw')
+        latest_file = HandlerBranchStaging.get_latest_parquet_file(raw_path)
 
         if latest_file:
             print(f"Processing file: {latest_file}")
             df = spark.read.parquet(latest_file)
-            cleaned_df = HandlerStaging.clean_data(df)
+            cleaned_df = HandlerBranchStaging.clean_data(df)
             
             if cleaned_df.count() > 0:
-                staging_path = HandlerStaging.partition_folder('staging')
+                staging_path = HandlerBranchStaging.partition_folder('staging')
                 output_path = os.path.join(staging_path, "cleaned_data.parquet")
 
                 temp_output_path = os.path.join(staging_path, "temp_output")
@@ -79,4 +79,4 @@ class HandlerStaging:
             print("No raw data file found to process.")
 
 if __name__ == "__main__":
-    HandlerStaging.process_latest_raw()
+    HandlerBranchStaging.process_latest_raw()

@@ -14,9 +14,7 @@ def run_script(script_name):
         print(f"Salida de {script_path}:")
         print(result.stdout)
 
-
 if __name__ == "__main__":
     scripts = ["spark_session.py", "raw.py", "staging.py", "business.py", "lambda_function.py"]
-    
     for script in scripts:
         run_script(script)
