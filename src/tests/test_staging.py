@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from pyspark.sql import SparkSession
 
-import src.spark_session as spark_module
+import spark_session as spark_module
 
 def test_spark_session_creation():
     assert spark_module.spark is not None

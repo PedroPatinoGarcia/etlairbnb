@@ -6,7 +6,7 @@ import shutil
 from unittest.mock import patch, MagicMock
 from pyspark.sql import SparkSession
 from datetime import datetime
-from src.business import HandlerBusiness
+from business import HandlerBusiness
 
 @pytest.fixture(scope="module")
 def spark():

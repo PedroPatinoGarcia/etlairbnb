@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 def run_script(script_name):
     script_path = os.path.join("src", script_name)
