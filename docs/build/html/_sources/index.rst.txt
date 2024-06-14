@@ -8,18 +8,9 @@ Welcome to etlairbnb's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-   
-   raw
-   staging
-   business
-   lambda_function
-   spark_session
-   test
-   script
+   :caption: Contents:   
+
    modules
-
-
 
 Indices and tables
 ==================
