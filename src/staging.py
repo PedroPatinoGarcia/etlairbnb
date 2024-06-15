@@ -1,25 +1,37 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, exp, length, format_string, split, regexp_replace, concat_ws
-from pyspark.sql.types import StringType, ArrayType
-import os
-import shutil
+from pyspark.sql.functions import concat_ws, col, current_date
+from pyspark.sql.types import ArrayType
 from datetime import datetime
+import os
 
-spark = SparkSession.builder.appName("StagingAirBnB").getOrCreate()
+spark = SparkSession.builder.appName("BusinessAirBnB").getOrCreate()
 
-class HandlerBranchStaging:
+class HandlerBranchBusiness:
     @staticmethod
-    def get_latest_parquet_file(directory):
+    def get_latest_parquet_files(directory):
         try:
             files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.parquet')]
             if not files:
                 raise ValueError(f"No Parquet files found in {directory}.")
-            latest_file = max(files, key=os.path.getctime)
-            return latest_file
+            return files
         except Exception as e:
-            print(f"Error getting the latest Parquet file: {e}")
-            return None
-    
+            print(f"Error getting the latest Parquet files: {e}")
+            return []
+
+    @staticmethod
+    def process_data(df):
+        # Obtener las columnas del DataFrame
+        columns = df.columns
+
+        # Iterar sobre las columnas y transformar arrays de tipo string
+        for col_name in columns:
+            col_type = df.schema[col_name].dataType
+            if isinstance(col_type, ArrayType) and col_type.elementType.typeName() == "string":
+                df = df.withColumn(col_name, concat_ws(", ", col(col_name)))
+
+        df = df.withColumn('processed_date', current_date())
+        return df
+
     @staticmethod
     def partition_folder(base_path):
         current_date = datetime.now()
@@ -32,51 +44,48 @@ class HandlerBranchStaging:
         return path
 
     @staticmethod
-    def clean_data(df):
-        df = df.dropna(subset=['zipcode'])
-        df = df.filter((length(col('zipcode')) == 5) | col('zipcode').endswith('.0'))
-        df = df.withColumn('zipcode', format_string('%05d', col('zipcode').cast('double').cast('int')))
-        df = df.withColumn('price', exp(col('log_price')))
+    def export_to_csv(df, output_path):
+        try:
+            temp_output_path = os.path.join(output_path, "temp_csv_output")
+            os.makedirs(temp_output_path, exist_ok=True)
 
-        columns_to_remove = ["description", "name", "thumbnail_url"]
-        for column in columns_to_remove:
-            if column in df.columns:
-                df = df.drop(column)
+            timestamp_suffix = datetime.now().strftime('%Y%m%d%H%M%S')
+            final_csv_path = os.path.join(output_path, f"data-{timestamp_suffix}.csv")
+            
+            # Guardar el CSV con un nombre único
+            df.coalesce(1).write.mode("overwrite").csv(temp_output_path, header=True)
 
-        df = df.withColumn('price', col('price').cast('int'))
-        df = df.withColumn('latitude', format_string('%.6f', col('latitude')))
-        df = df.withColumn('longitude', format_string('%.6f', col('longitude')))
-        df = df.withColumn("amenities", split(regexp_replace(col("amenities"), '[\\[\\]\"]', ''), ',\s*').cast(ArrayType(StringType())))
-        df = df.withColumn("amenities", concat_ws(", ", col("amenities")))
-        return df
+            temp_file = [f for f in os.listdir(temp_output_path) if f.endswith('.csv')][0]
+            os.rename(os.path.join(temp_output_path, temp_file), final_csv_path)
+
+            print(f"Datos exportados a CSV en {final_csv_path}")
+        except Exception as e:
+            print(f"Error al exportar a CSV: {e}")
 
     @staticmethod
-    def process_latest_raw():
-        raw_path = HandlerBranchStaging.partition_folder('raw')
-        latest_file = HandlerBranchStaging.get_latest_parquet_file(raw_path)
+    def process_latest_staging():
+        staging_path = HandlerBranchBusiness.partition_folder('staging')
+        latest_files = HandlerBranchBusiness.get_latest_parquet_files(staging_path)
 
-        if latest_file:
-            print(f"Processing file: {latest_file}")
-            df = spark.read.parquet(latest_file)
-            cleaned_df = HandlerBranchStaging.clean_data(df)
-            
-            if cleaned_df.count() > 0:
-                staging_path = HandlerBranchStaging.partition_folder('staging')
-                output_path = os.path.join(staging_path, "cleaned_data.parquet")
-
-                temp_output_path = os.path.join(staging_path, "temp_output")
-                cleaned_df.coalesce(1).write.mode("overwrite").parquet(temp_output_path)
-
-                temp_file = [f for f in os.listdir(temp_output_path) if f.endswith('.parquet')][0]
-                os.rename(os.path.join(temp_output_path, temp_file), output_path)
-
-                shutil.rmtree(temp_output_path)
-
-                print(f"Data cleaned and saved to {output_path}")
-            else:
-                print("DataFrame is empty after cleaning. No file was saved.")
-        else:
-            print("No raw data file found to process.")
+        for latest_file in latest_files:
+            try:
+                print(f"Procesando archivo: {latest_file}")
+                df = spark.read.parquet(latest_file)
+                business_df = HandlerBranchBusiness.process_data(df)
+                
+                if business_df.count() > 0:
+                    business_path = HandlerBranchBusiness.partition_folder('business')
+                    HandlerBranchBusiness.export_to_csv(business_df, business_path)
+                    output_path = os.path.join(business_path, f"data-{datetime.now().strftime('%Y-%m-%d-%H%M%S')}.parquet")  # Nombre único con timestamp
+                    business_df.coalesce(1).write.mode("overwrite").parquet(output_path)
+                    print(f"Datos procesados y guardados en {output_path}")
+                else:
+                    print("El DataFrame está vacío después del procesamiento. No se guardó ningún archivo.")
+            except Exception as e:
+                print(f"Error al procesar archivo {latest_file}: {e}")
+        
+        if not latest_files:
+            print("No se encontraron archivos de datos de staging para procesar.")
 
 if __name__ == "__main__":
-    HandlerBranchStaging.process_latest_raw()
+    HandlerBranchBusiness.process_latest_staging()
