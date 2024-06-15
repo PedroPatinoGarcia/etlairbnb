@@ -4,6 +4,8 @@ from pyspark.sql.types import ArrayType
 from datetime import datetime
 import os
 import shutil
+import random
+import string
 
 spark = SparkSession.builder.appName("BusinessAirBnB").getOrCreate()
 
@@ -45,6 +47,9 @@ class HandlerBranchBusiness:
     def export_to_csv(df, output_path, csv_name):
         try:
             temp_output_path = os.path.join(output_path, "temp_csv_output")
+            if os.path.exists(temp_output_path):
+                shutil.rmtree(temp_output_path)  # Asegurar que el directorio temporal esté limpio
+            
             os.makedirs(temp_output_path, exist_ok=True)
 
             final_csv_path = os.path.join(output_path, f"{csv_name}-{datetime.now().strftime('%Y-%m-%d')}.csv")
@@ -53,11 +58,19 @@ class HandlerBranchBusiness:
             df.coalesce(1).write.mode("overwrite").csv(temp_output_path, header=True)
 
             temp_file = [f for f in os.listdir(temp_output_path) if f.endswith('.csv')][0]
-            os.rename(os.path.join(temp_output_path, temp_file), final_csv_path)
+            temp_file_path = os.path.join(temp_output_path, temp_file)
+
+            if os.path.exists(final_csv_path):
+                if csv_name == "EDA":
+                    final_csv_path = final_csv_path.replace(".csv", "_EDA.csv")
+                else:
+                    unique_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+                    final_csv_path = final_csv_path.replace(".csv", f"_{unique_suffix}.csv")
+
+            os.rename(temp_file_path, final_csv_path)
 
             print(f"Datos exportados a CSV en {final_csv_path}")
 
-            # Eliminar archivos temporales
             shutil.rmtree(temp_output_path)
         except Exception as e:
             print(f"Error al exportar a CSV: {e}")
