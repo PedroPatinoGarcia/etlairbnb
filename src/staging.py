@@ -2,7 +2,7 @@ import os
 import shutil
 from datetime import datetime
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, exp, length, format_string, split, regexp_replace, concat_ws, lit
+from pyspark.sql.functions import col, exp, length, format_string, split, regexp_replace, concat_ws
 from pyspark.sql import functions as F
 from pyspark.sql.types import StringType, ArrayType
 
@@ -66,7 +66,7 @@ class HandlerBranchStaging:
         df = df.withColumn('zipcode', format_string('%05d', col('zipcode').cast('double').cast('int')))
         df = df.withColumn('price', exp(col('log_price')))
 
-        columns_to_remove = ["description", "name", "thumbnail_url", "processed_date"]
+        columns_to_remove = ["description", "name", "thumbnail_url"]
         for column in columns_to_remove:
             if column in df.columns:
                 df = df.drop(column)
@@ -74,48 +74,11 @@ class HandlerBranchStaging:
         df = df.withColumn('price', col('price').cast('int'))
         df = df.withColumn('latitude', format_string('%.6f', col('latitude')))
         df = df.withColumn('longitude', format_string('%.6f', col('longitude')))
-        df = df.withColumn("amenities", split(regexp_replace(col("amenities"), '[\\[\\]\"]', ''), ',\s*').cast(ArrayType(StringType())))
+        #df = df.withColumn("amenities", split(regexp_replace(col("amenities"), '[\\[\\]\"]', ''), ',\s*').cast(ArrayType(StringType())))
+        df = df.withColumn("amenities", split(regexp_replace(col("amenities"), '[\\[\\]\"]', ''), r',\s*').cast(ArrayType(StringType())))
         df = df.withColumn("amenities", concat_ws(", ", col("amenities")))
         return df
 
-    @staticmethod
-    def process_cleaned_data(df):
-        """
-        Procesa datos limpios adicionales en un DataFrame Spark.
-
-        Args:
-            df (DataFrame): DataFrame Spark con datos limpios.
-
-        Returns:
-            DataFrame: DataFrame Spark con datos procesados adicionales.
-        """
-        amenities_df = df.select(F.explode(F.split(F.col("amenities"), ",")).alias("amenity"))
-        amenities_list = [row['amenity'] for row in amenities_df.select(F.trim(F.col("amenity")).alias("amenity")).distinct().collect()]
-
-        
-        for amenity in amenities_list:
-            cleaned_amenity = amenity.strip()
-            df = df.withColumn(cleaned_amenity, F.col("amenities").contains(cleaned_amenity).cast("int"))
-        
-        if "Firm mattress" in df.columns and "Firm matress" in df.columns:
-            df = df.withColumn("Firm mattress", F.col("Firm mattress") + F.col("Firm matress"))
-            df = df.drop("Firm matress")
-
-        if "Smart lock" in df.columns and "Smartlock" in df.columns:
-            df = df.withColumn("Smart lock", F.col("Smart lock") + F.col("Smartlock"))
-            df = df.drop("Smartlock")
-
-        if "Wide clearance to shower and toilet" in df.columns and "Wide clearance to shower & toilet" in df.columns:
-            df = df.withColumn("Wide clearance to shower and toilet", F.col("Wide clearance to shower and toilet") + F.col("Wide clearance to shower & toilet"))
-            df = df.drop("Wide clearance to shower & toilet")
-
-        df = df.withColumn("Firm mattress", (F.col("Firm mattress") > 0).cast("int"))
-        df = df.withColumn("Smart lock", (F.col("Smart lock") > 0).cast("int"))
-        df = df.withColumn("Wide clearance to shower and toilet", (F.col("Wide clearance to shower and toilet") > 0).cast("int"))
-
-        df = df.drop("amenities")
-
-        return df
 
     @staticmethod
     def process_latest_raw():
@@ -123,7 +86,7 @@ class HandlerBranchStaging:
         Procesa el archivo Parquet más reciente en el directorio 'raw',
         limpia los datos, y guarda los resultados en el directorio 'staging'.
         """
-        raw_path = HandlerBranchStaging.partition_folder('C:/Users/ppatinog/OneDrive - NTT DATA EMEAL/Escritorio/ProyectoFinal/raw')
+        raw_path = HandlerBranchStaging.partition_folder('raw')
         latest_file = HandlerBranchStaging.get_latest_parquet_file(raw_path)
 
         if latest_file:
@@ -132,7 +95,7 @@ class HandlerBranchStaging:
             cleaned_df = HandlerBranchStaging.clean_data(df)
             
             if cleaned_df.count() > 0:
-                staging_path = HandlerBranchStaging.partition_folder('C:/Users/ppatinog/OneDrive - NTT DATA EMEAL/Escritorio/ProyectoFinal/staging')
+                staging_path = HandlerBranchStaging.partition_folder('staging')
                 output_path = os.path.join(staging_path, "cleaned_data.parquet")
 
                 temp_output_path = os.path.join(staging_path, "temp_output")
@@ -144,20 +107,6 @@ class HandlerBranchStaging:
                 shutil.rmtree(temp_output_path)
 
                 print(f"Data cleaned and saved to {output_path}")
-
-                # Process the cleaned data further
-                processed_cleaned_df = HandlerBranchStaging.process_cleaned_data(cleaned_df)
-                output_processed_path = os.path.join(staging_path, "processed_cleaned_data.parquet")
-
-                temp_output_processed_path = os.path.join(staging_path, "temp_output_processed")
-                processed_cleaned_df.coalesce(1).write.mode("overwrite").parquet(temp_output_processed_path)
-
-                temp_file_processed = [f for f in os.listdir(temp_output_processed_path) if f.endswith('.parquet')][0]
-                os.rename(os.path.join(temp_output_processed_path, temp_file_processed), output_processed_path)
-
-                shutil.rmtree(temp_output_processed_path)
-
-                print(f"Processed cleaned data saved to {output_processed_path}")
 
             else:
                 print("DataFrame is empty after cleaning. No file was saved.")

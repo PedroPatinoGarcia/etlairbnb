@@ -10,4 +10,4 @@ src
    business
    lambda_function
    script
-   IA
+   Entrenamiento

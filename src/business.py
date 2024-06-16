@@ -1,11 +1,9 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import concat_ws, col, current_date
+from pyspark.sql.functions import concat_ws, col
 from pyspark.sql.types import ArrayType
 from datetime import datetime
 import os
 import shutil
-import random
-import string
 
 spark = SparkSession.builder.appName("BusinessAirBnB").getOrCreate()
 
@@ -33,8 +31,7 @@ class HandlerBranchBusiness:
     @staticmethod
     def process_data(df):
         """
-        Procesa un DataFrame Spark, convirtiendo los arrays de tipo string en strings separados por comas
-        y añade una columna 'processed_date' con la fecha actual.
+        Procesa un DataFrame Spark, convirtiendo los arrays de tipo string en strings separados por comas.
 
         Args:
             df (DataFrame): DataFrame Spark a procesar.
@@ -48,7 +45,6 @@ class HandlerBranchBusiness:
             if isinstance(col_type, ArrayType) and col_type.elementType.typeName() == "string":
                 df = df.withColumn(col_name, concat_ws(", ", col(col_name)))
 
-        df = df.withColumn('processed_date', current_date())
         return df
 
     @staticmethod
@@ -74,7 +70,7 @@ class HandlerBranchBusiness:
     @staticmethod
     def export_to_csv(df, output_path, csv_name):
         """
-        Exporta un DataFrame Spark a un archivo CSV en una ruta especificada, con nombre único si es necesario.
+        Exporta un DataFrame Spark a un archivo CSV en una ruta especificada, con nombre fijo basado en la fecha.
 
         Args:
             df (DataFrame): DataFrame Spark a exportar.
@@ -94,13 +90,6 @@ class HandlerBranchBusiness:
             temp_file = [f for f in os.listdir(temp_output_path) if f.endswith('.csv')][0]
             temp_file_path = os.path.join(temp_output_path, temp_file)
 
-            if os.path.exists(final_csv_path):
-                if csv_name == "EDA":
-                    final_csv_path = final_csv_path.replace(".csv", "_EDA.csv")
-                else:
-                    unique_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-                    final_csv_path = final_csv_path.replace(".csv", f"_{unique_suffix}.csv")
-
             os.rename(temp_file_path, final_csv_path)
 
             print(f"Datos exportados a CSV en {final_csv_path}")
@@ -112,37 +101,36 @@ class HandlerBranchBusiness:
     @staticmethod
     def process_latest_staging():
         """
-        Procesa los archivos Parquet más recientes en el directorio 'staging',
-        procesa los datos según el tipo de archivo y exporta los resultados a CSV en una carpeta 'business'.
+        Procesa el archivo Parquet más reciente en el directorio 'staging'.
+        Procesa los datos y exporta los resultados a CSV en una carpeta 'business'.
         """
         staging_path = HandlerBranchBusiness.partition_folder('staging')
         latest_files = HandlerBranchBusiness.get_latest_parquet_files(staging_path)
 
-        for latest_file in latest_files:
+        if latest_files:
+            latest_file = latest_files[0]
+            
             try:
                 print(f"Procesando archivo: {latest_file}")
                 df = spark.read.parquet(latest_file)
                 
-                if "cleaned_data" in latest_file:
-                    df_name = "data"
-                elif "processed_amenities" in latest_file:
-                    df_name = "EDA"
-                else:
-                    df_name = "unknown"
+                df_name = "data"
 
                 business_df = HandlerBranchBusiness.process_data(df)
                 
                 if business_df.count() > 0:
                     output_path = os.path.join('business', f"{df_name}-{datetime.now().strftime('%Y-%m-%d')}")
                     HandlerBranchBusiness.export_to_csv(business_df, output_path, df_name)
-                    print(f"Datos procesados y guardados en {output_path}")
+                    print(f"Datos procesados y guardados en {output_path}.csv")
                 else:
                     print("El DataFrame está vacío después del procesamiento. No se guardó ningún archivo.")
+            
             except Exception as e:
                 print(f"Error al procesar archivo {latest_file}: {e}")
         
-        if not latest_files:
+        else:
             print("No se encontraron archivos de datos de staging para procesar.")
 
-if __name__ == "__main__":
-    HandlerBranchBusiness.process_latest_staging()
+    if __name__ == "__main__":
+        process_latest_staging()
+
