@@ -11,6 +11,15 @@ spark = SparkSession.builder.appName("StagingAirBnB").getOrCreate()
 class HandlerBranchStaging:
     @staticmethod
     def get_latest_parquet_file(directory):
+        """
+        Obtiene los archivos más recientes en formato Parquet desde un directorio especificado.
+
+        Args:
+            directory (str): Directorio donde buscar archivos Parquet.
+
+        Returns:
+            list: Lista de rutas completas a los archivos Parquet encontrados.
+        """
         try:
             files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.parquet')]
             if not files:
@@ -23,6 +32,15 @@ class HandlerBranchStaging:
 
     @staticmethod
     def partition_folder(base_path):
+        """
+        Crea una estructura de carpetas basada en la fecha actual dentro de un directorio base.
+
+        Args:
+            base_path (str): Directorio base donde crear la estructura de carpetas.
+
+        Returns:
+            str: Ruta completa de la carpeta creada.
+        """
         current_date = datetime.now()
         year = current_date.year
         month = current_date.month
@@ -34,6 +52,15 @@ class HandlerBranchStaging:
 
     @staticmethod
     def clean_data(df):
+        """
+        Limpia y transforma un DataFrame Spark.
+
+        Args:
+            df (DataFrame): DataFrame Spark a limpiar.
+
+        Returns:
+            DataFrame: DataFrame Spark limpio y transformado.
+        """
         df = df.dropna(subset=['zipcode'])
         df = df.filter((length(col('zipcode')) == 5) | col('zipcode').endswith('.0'))
         df = df.withColumn('zipcode', format_string('%05d', col('zipcode').cast('double').cast('int')))
@@ -53,6 +80,15 @@ class HandlerBranchStaging:
 
     @staticmethod
     def process_cleaned_data(df):
+        """
+        Procesa datos limpios adicionales en un DataFrame Spark.
+
+        Args:
+            df (DataFrame): DataFrame Spark con datos limpios.
+
+        Returns:
+            DataFrame: DataFrame Spark con datos procesados adicionales.
+        """
         amenities_df = df.select(F.explode(F.split(F.col("amenities"), ",")).alias("amenity"))
         amenities_list = [row['amenity'] for row in amenities_df.select(F.trim(F.col("amenity")).alias("amenity")).distinct().collect()]
 
@@ -83,6 +119,10 @@ class HandlerBranchStaging:
 
     @staticmethod
     def process_latest_raw():
+        """
+        Procesa el archivo Parquet más reciente en el directorio 'raw',
+        limpia los datos, y guarda los resultados en el directorio 'staging'.
+        """
         raw_path = HandlerBranchStaging.partition_folder('C:/Users/ppatinog/OneDrive - NTT DATA EMEAL/Escritorio/ProyectoFinal/raw')
         latest_file = HandlerBranchStaging.get_latest_parquet_file(raw_path)
 

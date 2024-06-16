@@ -3,6 +3,13 @@ import subprocess
 import sys
 
 def run_script(script_name):
+    """
+    Ejecuta un script de Python ubicado en la carpeta 'src' utilizando subprocess.
+
+    Args:
+        script_name (str): Nombre del script a ejecutar.
+
+    """
     script_path = os.path.join("src", script_name)
     print(f"Ejecutando {script_path}...")
     result = subprocess.run(["python", script_path], capture_output=True, text=True)

@@ -1,0 +1,27 @@
+==============================
+IA Documentation
+==============================
+
+.. module:: IA
+   :synopsis: Notebook de inteligencia artificial
+
+Detalles Adicionales
+---------------------
+
+### Estructura de Archivos
+
+El proyecto tiene la siguiente estructura de directorios:
+
+- `IA/`: Directorio donde se almacenan los datos originales en formato Parquet.
+
+### Dependencias
+
+- PySpark: Se requiere para la manipulación y procesamiento de grandes volúmenes de datos.
+
+### Configuración
+
+El archivo `spark_session.py` configura la sesión de Spark para el proyecto.
+
+### Consideraciones de Uso
+
+- Asegúrese de tener los permisos adecuados para crear carpetas y escribir archivos en el sistema de archivos.

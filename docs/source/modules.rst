@@ -9,5 +9,5 @@ src
    staging
    business
    lambda_function
-   test
    script
+   IA

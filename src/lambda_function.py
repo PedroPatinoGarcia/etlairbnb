@@ -4,6 +4,12 @@ from botocore.exceptions import ClientError
 import os
 
 def HandlerBranchLambda():
+    """
+    Función para manejar la lógica de subida de archivos a un bucket S3 usando AWS Lambda.
+
+    Returns:
+        dict: Un diccionario con el estado de la operación y un mensaje en formato JSON.
+    """
     s3_client = boto3.client('s3')
     bucket_name = 'nmpbucketairbnb'
     file_name = 'data-2024-06-16.csv'
