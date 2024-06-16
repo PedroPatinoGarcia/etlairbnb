@@ -3,6 +3,7 @@ import shutil
 from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, exp, length, format_string, split, regexp_replace, concat_ws, lit
+from pyspark.sql import functions as F
 from pyspark.sql.types import StringType, ArrayType
 
 spark = SparkSession.builder.appName("StagingAirBnB").getOrCreate()
@@ -38,7 +39,7 @@ class HandlerBranchStaging:
         df = df.withColumn('zipcode', format_string('%05d', col('zipcode').cast('double').cast('int')))
         df = df.withColumn('price', exp(col('log_price')))
 
-        columns_to_remove = ["description", "name", "thumbnail_url"]
+        columns_to_remove = ["description", "name", "thumbnail_url", "processed_date"]
         for column in columns_to_remove:
             if column in df.columns:
                 df = df.drop(column)
@@ -52,25 +53,31 @@ class HandlerBranchStaging:
 
     @staticmethod
     def process_cleaned_data(df):
-        # Split amenities into separate columns
-        amenities_list = ["Firm mattress", "Firm matress", "Smart lock", "Smartlock", "Wide clearance to shower and toilet", "Wide clearance to shower & toilet"]
+        amenities_df = df.select(F.explode(F.split(F.col("amenities"), ",")).alias("amenity"))
+        amenities_list = [row['amenity'] for row in amenities_df.select(F.trim(F.col("amenity")).alias("amenity")).distinct().collect()]
+
         
         for amenity in amenities_list:
-            df = df.withColumn(amenity, col("amenities").contains(amenity).cast("int"))
+            cleaned_amenity = amenity.strip()
+            df = df.withColumn(cleaned_amenity, F.col("amenities").contains(cleaned_amenity).cast("int"))
+        
+        if "Firm mattress" in df.columns and "Firm matress" in df.columns:
+            df = df.withColumn("Firm mattress", F.col("Firm mattress") + F.col("Firm matress"))
+            df = df.drop("Firm matress")
 
-        # Combine and clean specific columns
-        df = df.withColumn("Firm mattress", col("Firm mattress") + col("Firm matress"))
-        df = df.withColumn("Smart lock", col("Smart lock") + col("Smartlock"))
-        df = df.withColumn("Wide clearance to shower and toilet", col("Wide clearance to shower and toilet") + col("Wide clearance to shower & toilet"))
+        if "Smart lock" in df.columns and "Smartlock" in df.columns:
+            df = df.withColumn("Smart lock", F.col("Smart lock") + F.col("Smartlock"))
+            df = df.drop("Smartlock")
 
-        # Apply lambda conditions
-        df = df.withColumn("Firm mattress", (col("Firm mattress") > 0).cast("int"))
-        df = df.withColumn("Smart lock", (col("Smart lock") > 0).cast("int"))
-        df = df.withColumn("Wide clearance to shower and toilet", (col("Wide clearance to shower and toilet") > 0).cast("int"))
+        if "Wide clearance to shower and toilet" in df.columns and "Wide clearance to shower & toilet" in df.columns:
+            df = df.withColumn("Wide clearance to shower and toilet", F.col("Wide clearance to shower and toilet") + F.col("Wide clearance to shower & toilet"))
+            df = df.drop("Wide clearance to shower & toilet")
 
-        # Drop unwanted columns
-        columns_to_drop = ["Firm matress", "Smartlock", "Wide clearance to shower & toilet", "amenities"]
-        df = df.drop(*columns_to_drop)
+        df = df.withColumn("Firm mattress", (F.col("Firm mattress") > 0).cast("int"))
+        df = df.withColumn("Smart lock", (F.col("Smart lock") > 0).cast("int"))
+        df = df.withColumn("Wide clearance to shower and toilet", (F.col("Wide clearance to shower and toilet") > 0).cast("int"))
+
+        df = df.drop("amenities")
 
         return df
 

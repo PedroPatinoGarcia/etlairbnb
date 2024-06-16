@@ -8,7 +8,7 @@ if os.path.exists(winutils_path):
 
 spark = SparkSession.builder \
     .appName("DataHandler") \
-    .config("spark.executor.memory", "10g") \
+    .config("spark.executor.memory", "20g") \
     .getOrCreate()
 
 spark.sparkContext.setLogLevel("ERROR")

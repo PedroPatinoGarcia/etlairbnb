@@ -6,7 +6,7 @@ import os
 def HandlerBranchLambda():
     s3_client = boto3.client('s3')
     bucket_name = 'nmpbucketairbnb'
-    file_name = 'data-2024-06-15.csv'
+    file_name = 'data-2024-06-16.csv'
 
     try:
         s3_client.create_bucket(Bucket=bucket_name)
@@ -18,7 +18,7 @@ def HandlerBranchLambda():
             print(f"Error al crear el bucket '{bucket_name}': {e}")
             raise
 
-    file_path = os.path.join('./business/data-2024-06-15', file_name)
+    file_path = os.path.join('./business/data-2024-06-16', file_name)
 
     try:
         with open(file_path, 'rb') as f:
