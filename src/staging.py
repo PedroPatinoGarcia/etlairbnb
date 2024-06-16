@@ -74,7 +74,6 @@ class HandlerBranchStaging:
         df = df.withColumn('price', col('price').cast('int'))
         df = df.withColumn('latitude', format_string('%.6f', col('latitude')))
         df = df.withColumn('longitude', format_string('%.6f', col('longitude')))
-        #df = df.withColumn("amenities", split(regexp_replace(col("amenities"), '[\\[\\]\"]', ''), ',\s*').cast(ArrayType(StringType())))
         df = df.withColumn("amenities", split(regexp_replace(col("amenities"), '[\\[\\]\"]', ''), r',\s*').cast(ArrayType(StringType())))
         df = df.withColumn("amenities", concat_ws(", ", col("amenities")))
         return df

@@ -131,6 +131,6 @@ class HandlerBranchBusiness:
         else:
             print("No se encontraron archivos de datos de staging para procesar.")
 
-    if __name__ == "__main__":
-        process_latest_staging()
+if __name__ == "__main__":
+    HandlerBranchBusiness.process_latest_staging()
 
